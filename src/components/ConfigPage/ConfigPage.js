@@ -16,8 +16,8 @@ export default class ConfigPage extends React.Component {
             finishedLoading: false,
             theme: 'light',
             stuff: '',
-            trustedMembers: [{name:"scruffythejanitor01"},{name:"jigglewood"},{name:"MaxGrosshandler"}],
-            currentViewers: [{name:"AnneMunition"},{name:"lirik"},{name:"Summit1g"},{name:"TimTheTatman"}],
+            trustedMembers: [],//[{name:"scruffythejanitor01"},{name:"jigglewood"},{name:"MaxGrosshandler"}],
+            currentViewers: [],//[{name:"AnneMunition"},{name:"lirik"},{name:"Summit1g"},{name:"TimTheTatman"}],
             teamName: 'TheJAAM'
         }
         // this.sendThing = this.sendThing.bind(this)
@@ -61,6 +61,7 @@ export default class ConfigPage extends React.Component {
             let trusted = [];
             let untrusted = [];
             users.forEach(user => {
+                if(!user.id) return;
                 if(user.role === 'TRUSTED') {
                     trusted.push({name:user.id})
                 } else {
@@ -87,6 +88,12 @@ export default class ConfigPage extends React.Component {
         }
         console.log(trustedList);
         this.setState({trustedMembers:trustedList, currentViewers:viewerList});
+
+        //Update DB with new trust level
+        axios.post('https://ha9bg7ly2c.execute-api.us-west-2.amazonaws.com/dev/team/TEST_TEAM',{
+            "user":userId,
+            "role":value ? "TRUSTED" : "UNTRUSTED"
+        })
     }
 
     render() {
@@ -101,6 +108,7 @@ export default class ConfigPage extends React.Component {
                 <div className="Config">
                     <h1 className="configHeader" align="center">Teams+</h1>
                     <div className={this.state.theme === 'light' ? 'Config-light' : 'Config-dark'}>
+                        <h1>Team: {this.state.teamName}</h1>
                         <div className="Container">
                             <div className="Trusted">
                                 <h2>Trusted Members</h2>
