@@ -91,10 +91,8 @@ export default class ConfigPage extends React.Component {
 
         //Update DB with new trust level
         axios.post('https://ha9bg7ly2c.execute-api.us-west-2.amazonaws.com/dev/team/TEST_TEAM',{
-            body:{
-                "user":userId,
-                "role":value ? "TRUSTED" : "UNTRUSTED"
-            }
+            "user":userId,
+            "role":value ? "TRUSTED" : "UNTRUSTED"
         })
     }
 
