@@ -99,23 +99,24 @@ export default class ConfigPage extends React.Component {
     render() {
         if (true){//(this.state.finishedLoading && this.Authentication.isModerator()) {
             const trustedList = this.state.trustedMembers.map(member => {
-                return <li>{member.name}<input type="checkbox" checked onChange={event => this.updateTrust(member.name,event.target.checked)}></input></li>
+                return <li className="viewer"><input className="checkBox" type="checkbox" checked={true} onChange={event => this.updateTrust(member.name,event.target.checked)}></input>{member.name}</li>
             })
             const viewerList = this.state.currentViewers.map(viewer => {
-                return <li>{viewer.name}<input type="checkbox" checked={false} onChange={event => this.updateTrust(viewer.name,event.target.checked)}></input></li>
+                return <li className="viewer"><input className="checkBox" type="checkbox" checked={false} onChange={event => this.updateTrust(viewer.name,event.target.checked)}></input>{viewer.name}</li>
             })
             return (
                 <div className="Config">
+                    <h1 className="configHeader" align="center">Teams+</h1>
                     <div className={this.state.theme === 'light' ? 'Config-light' : 'Config-dark'}>
                         <h1>Team: {this.state.teamName}</h1>
                         <div className="Container">
-                            <div>
-                                <h1>Trusted Members</h1>
-                                <ul>{trustedList}</ul>
+                            <div className="Trusted">
+                                <h2>Trusted Members</h2>
+                                <ul className='list'>{trustedList}</ul>
                             </div>
-                            <div>
-                                <h1>Current Viewers</h1>
-                                <ul>{viewerList}</ul>
+                            <div className="Regular">
+                                <h2>Current Viewers</h2>
+                                <ul className='list'>{viewerList}</ul>
                             </div>
                         </div>
                     </div>
