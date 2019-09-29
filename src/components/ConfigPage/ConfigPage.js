@@ -1,111 +1,123 @@
 import React from 'react'
 import Authentication from '../../util/Authentication/Authentication'
 import axios from 'axios'
+import lodash from 'lodash'
 
 import './Config.css'
 
-export default class ConfigPage extends React.Component{
-    constructor(props){
+export default class ConfigPage extends React.Component {
+    constructor(props) {
         super(props)
         this.Authentication = new Authentication()
 
         //if the extension is running on twitch or dev rig, set the shorthand here. otherwise, set to null. 
         this.twitch = window.Twitch ? window.Twitch.ext : null
-        this.state={
-            finishedLoading:false,
-            theme:'light',
-            stuff: ''
+        this.state = {
+            finishedLoading: false,
+            theme: 'light',
+            stuff: '',
+            trustedMembers: [{name:"scruffythejanitor01"},{name:"jigglewood"},{name:"MaxGrosshandler"}],
+            currentViewers: [{name:"AnneMunition"},{name:"lirik"},{name:"Summit1g"},{name:"TimTheTatman"}],
+            teamName: 'TheJAAM'
         }
-        this.sendThing = this.sendThing.bind(this)
-        this.changeTrustLevel = this.changeTrustLevel.bind(this)
+        // this.sendThing = this.sendThing.bind(this)
+        // this.changeTrustLevel = this.changeTrustLevel.bind(this)
     }
 
-    sendThing(){
-this.setState({stuff: document.getElementById('stuff').value + " was added to your Team!"})
-var x = document.getElementById("list");
-var option = document.createElement("option");
-option.text = document.getElementById('stuff').value;
-option.value = "Neutral"
-x.add(option);
-document.getElementById('stuff').value = ''
-axios.post("http://ha9bg7ly2c.execute-api.us-west-2.amazonaws.com/dev/team/TEST_TEAM", {data: {
-    "user":"maxs",
-    "role": "TRUSTED"
-}})
-
-    }
-
-    changeTrustLevel(){
-        console.log(document.getElementById('MaxGrosshandlerLevel').id)
-        document.getElementById(document.getElementById('trustList').value).value = document.getElementById('levelList').value
-    }
-
-    handleChange(){
-        document.getElementById("lab").innerHTML = "Trust Level: " + document.getElementById("list").value
-    }
-    contextUpdate(context, delta){
-        if(delta.includes('theme')){
-            this.setState(()=>{
-                return {theme:context.theme}
+    contextUpdate(context, delta) {
+        if (delta.includes('theme')) {
+            this.setState(() => {
+                return { theme: context.theme }
             })
         }
     }
 
-    componentDidMount(){
+    componentDidMount() {
         // do config page setup as needed here
-        if(this.twitch){
-            this.twitch.onAuthorized((auth)=>{
+        if (this.twitch) {
+            this.twitch.onAuthorized((auth) => {
                 this.Authentication.setToken(auth.token, auth.userId)
-                if(!this.state.finishedLoading){
+                if (!this.state.finishedLoading) {
                     // if the component hasn't finished loading (as in we've not set up after getting a token), let's set it up now.
-    
+
                     // now we've done the setup for the component, let's set the state to true to force a rerender with the correct data.
-                    this.setState(()=>{
-                        return {finishedLoading:true}
+                    this.setState(() => {
+                        return { finishedLoading: true }
                     })
                 }
             })
-    
-            this.twitch.onContext((context,delta)=>{
-                this.contextUpdate(context,delta)
+
+            this.twitch.onContext((context, delta) => {
+                this.contextUpdate(context, delta)
             })
         }
+
+        //Request trusted viewer list
+        axios.get(`https://ha9bg7ly2c.execute-api.us-west-2.amazonaws.com/dev/team/all/TEST_TEAM`,
+        {
+        }).then(response => {
+            const data = response.data;
+            const users = Object.values(data.users);
+            let trusted = [];
+            let untrusted = [];
+            users.forEach(user => {
+                if(user.role === 'TRUSTED') {
+                    trusted.push({name:user.id})
+                } else {
+                    untrusted.push({name:user.id})
+                }
+            })
+            this.setState({trustedMembers:trusted, currentViewers:untrusted})
+            console.log(data);
+        })
     }
 
-    render(){
-        if(this.state.finishedLoading && this.Authentication.isModerator()){
-            return(
+    updateTrust(userId,value) {
+        console.log(`Updating trust ${userId} to ${value}`)
+        let trustedList = this.state.trustedMembers;
+        let viewerList = this.state.currentViewers;
+        if(value) {
+            trustedList.push({name:userId});
+            const viewer = viewerList.find(el => el.name === userId);
+            viewerList = lodash.pull(viewerList,viewer);
+        } else {
+            viewerList.push({name:userId});
+            const member = trustedList.find(el => el.name === userId);
+            trustedList = lodash.pull(trustedList,member);
+        }
+        console.log(trustedList);
+        this.setState({trustedMembers:trustedList, currentViewers:viewerList});
+    }
+
+    render() {
+        if (true){//(this.state.finishedLoading && this.Authentication.isModerator()) {
+            const trustedList = this.state.trustedMembers.map(member => {
+                return <li>{member.name}<input type="checkbox" checked onChange={event => this.updateTrust(member.name,event.target.checked)}></input></li>
+            })
+            const viewerList = this.state.currentViewers.map(viewer => {
+                return <li>{viewer.name}<input type="checkbox" onChange={event => this.updateTrust(viewer.name,event.target.checked)}></input></li>
+            })
+            return (
                 <div className="Config">
-                    <div className={this.state.theme==='light' ? 'Config-light' : 'Config-dark'}>
-
-                    {/* It would be cool if the below stuff actually did something   */}
-                    Add person to team<br></br>
-                    <input type="text" id="stuff"></input>
-                        <button onClick={this.sendThing}>Yes</button>
-                        <br></br>
-                        {this.state.stuff}
-<br></br>
-<br></br>
-View trust level: 
-<select id="list" onChange={this.handleChange}>
-<option value=""selected>Select someone</option>
-  <option value="Neutral" >MaxGrosshandler</option>
-  <option value="Moderator">Jigglewood</option>
-  <option value="Verified">Scruffy</option>
-  <option value="Donator">Awen</option>
-</select>
-<br></br>
-<label id="lab">Trust Level: </label>
-<br></br>
-
+                    <div className={this.state.theme === 'light' ? 'Config-light' : 'Config-dark'}>
+                        <div className="Container">
+                            <div>
+                                <h1>Trusted Members</h1>
+                                <ul>{trustedList}</ul>
+                            </div>
+                            <div>
+                                <h1>Current Viewers</h1>
+                                <ul>{viewerList}</ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )
         }
-        else{
-            return(
+        else {
+            return (
                 <div className="Config">
-                    <div className={this.state.theme==='light' ? 'Config-light' : 'Config-dark'}>
+                    <div className={this.state.theme === 'light' ? 'Config-light' : 'Config-dark'}>
                         Loading...
                     </div>
                 </div>

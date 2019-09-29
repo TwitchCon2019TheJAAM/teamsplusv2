@@ -9,3 +9,9 @@
 .Config-dark{
     color:#e5e3e8;
 }
+
+.Container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
