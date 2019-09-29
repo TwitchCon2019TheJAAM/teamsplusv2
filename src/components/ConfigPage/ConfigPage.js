@@ -18,11 +18,21 @@ export default class ConfigPage extends React.Component{
         }
         this.sendThing = this.sendThing.bind(this)
     }
+    
     sendThing(){
 this.setState({stuff: document.getElementById('stuff').value + " was added to your Team!"})
+var x = document.getElementById("list");
+var option = document.createElement("option");
+option.text = document.getElementById('stuff').value;
+option.value = "Neutral"
+x.add(option);
 document.getElementById('stuff').value = ''
+
     }
 
+    handleChange(){
+        document.getElementById("lab").innerHTML = "Trust Level: " + document.getElementById("list").value
+    }
     contextUpdate(context, delta){
         if(delta.includes('theme')){
             this.setState(()=>{
@@ -62,6 +72,18 @@ document.getElementById('stuff').value = ''
                         <button onClick={this.sendThing}>Yes</button>
                         <br></br>
                         {this.state.stuff}
+<br></br>
+<br></br>
+View trust level: 
+<select id="list" onChange={this.handleChange}>
+<option value=""selected>Select someone</option>
+  <option value="Neutral">MaxGrosshandler</option>
+  <option value="Moderator">Jigglewood</option>
+  <option value="Verified">Scruffy</option>
+  <option value="Donator">Awen</option>
+</select>
+<br></br>
+<label id="lab">Trust Level: </label>
                     </div>
                 </div>
             )
