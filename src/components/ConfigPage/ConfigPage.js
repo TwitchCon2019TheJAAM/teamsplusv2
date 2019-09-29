@@ -102,7 +102,7 @@ export default class ConfigPage extends React.Component {
                 return <li>{member.name}<input type="checkbox" checked onChange={event => this.updateTrust(member.name,event.target.checked)}></input></li>
             })
             const viewerList = this.state.currentViewers.map(viewer => {
-                return <li>{viewer.name}<input type="checkbox" onChange={event => this.updateTrust(viewer.name,event.target.checked)}></input></li>
+                return <li>{viewer.name}<input type="checkbox" checked={false} onChange={event => this.updateTrust(viewer.name,event.target.checked)}></input></li>
             })
             return (
                 <div className="Config">
