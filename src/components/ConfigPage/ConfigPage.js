@@ -1,5 +1,6 @@
 import React from 'react'
 import Authentication from '../../util/Authentication/Authentication'
+import axios from 'axios'
 
 import './Config.css'
 
@@ -12,8 +13,14 @@ export default class ConfigPage extends React.Component{
         this.twitch = window.Twitch ? window.Twitch.ext : null
         this.state={
             finishedLoading:false,
-            theme:'light'
+            theme:'light',
+            stuff: ''
         }
+        this.sendThing = this.sendThing.bind(this)
+    }
+    sendThing(){
+this.setState({stuff: document.getElementById('stuff').value + " was added to your Team!"})
+document.getElementById('stuff').value = ''
     }
 
     contextUpdate(context, delta){
@@ -50,7 +57,11 @@ export default class ConfigPage extends React.Component{
             return(
                 <div className="Config">
                     <div className={this.state.theme==='light' ? 'Config-light' : 'Config-dark'}>
-                        There is no configuration needed for this extension!
+                    Add person to team<br></br>
+                    <input type="text" id="stuff"></input>
+                        <button onClick={this.sendThing}>Yes</button>
+                        <br></br>
+                        {this.state.stuff}
                     </div>
                 </div>
             )
