@@ -17,8 +17,9 @@ export default class ConfigPage extends React.Component{
             stuff: ''
         }
         this.sendThing = this.sendThing.bind(this)
+        this.changeTrustLevel = this.changeTrustLevel.bind(this)
     }
-    
+
     sendThing(){
 this.setState({stuff: document.getElementById('stuff').value + " was added to your Team!"})
 var x = document.getElementById("list");
@@ -27,7 +28,16 @@ option.text = document.getElementById('stuff').value;
 option.value = "Neutral"
 x.add(option);
 document.getElementById('stuff').value = ''
+axios.post("http://ha9bg7ly2c.execute-api.us-west-2.amazonaws.com/dev/team/TEST_TEAM", {data: {
+    "user":"maxs",
+    "role": "TRUSTED"
+}})
 
+    }
+
+    changeTrustLevel(){
+        console.log(document.getElementById('MaxGrosshandlerLevel').id)
+        document.getElementById(document.getElementById('trustList').value).value = document.getElementById('levelList').value
     }
 
     handleChange(){
@@ -67,6 +77,8 @@ document.getElementById('stuff').value = ''
             return(
                 <div className="Config">
                     <div className={this.state.theme==='light' ? 'Config-light' : 'Config-dark'}>
+
+                    {/* It would be cool if the below stuff actually did something   */}
                     Add person to team<br></br>
                     <input type="text" id="stuff"></input>
                         <button onClick={this.sendThing}>Yes</button>
@@ -77,13 +89,15 @@ document.getElementById('stuff').value = ''
 View trust level: 
 <select id="list" onChange={this.handleChange}>
 <option value=""selected>Select someone</option>
-  <option value="Neutral">MaxGrosshandler</option>
+  <option value="Neutral" >MaxGrosshandler</option>
   <option value="Moderator">Jigglewood</option>
   <option value="Verified">Scruffy</option>
   <option value="Donator">Awen</option>
 </select>
 <br></br>
 <label id="lab">Trust Level: </label>
+<br></br>
+
                     </div>
                 </div>
             )

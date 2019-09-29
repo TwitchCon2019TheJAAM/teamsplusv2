@@ -2,6 +2,7 @@ import React from 'react'
 import Authentication from '../../util/Authentication/Authentication'
 
 import './App.css'
+import Axios from 'axios';
 
 export default class App extends React.Component{
     constructor(props){
@@ -73,11 +74,16 @@ export default class App extends React.Component{
     
     render(){
         if(this.state.finishedLoading && this.state.isVisible){
+            
             return (
                 <div className="App">
                     <div className={this.state.theme === 'light' ? 'App-light' : 'App-dark'} >
                         <p>Hello world!</p>
-                        <p>You are a user, good job!</p>
+                        <p>Hi, MaxGrosshandler! Your current Trust Level is Verified!</p>
+
+                        {/* There will need to be a list here of the paired Streamers  */}
+
+                        
                         {/* <p>My token is: {this.Authentication.state.token}</p>
                         <p>My opaque ID is {this.Authentication.getOpaqueId()}.</p>
                         <div>{this.Authentication.isModerator() ? <p>I am currently a mod, and here's a special mod button <input value='mod button' type='button'/></p>  : 'I am currently not a mod.'}</div>
